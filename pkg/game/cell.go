@@ -53,15 +53,12 @@ func countSurround(x, y int, board Board) int {
 
 	bombCount := 0
 	for _, dir := range dirs {
-		// newPoint := BasicCell{X: x + dir[1], Y: y + dir[0]}
 		b := board.isBomb(x+dir[1], y+dir[0])
-		// fmt.Println(newPoint, b)
 		if b {
 			bombCount++
 		}
 	}
 
-	// fmt.Println("bombCount", bombCount)
 	return bombCount
 }
 

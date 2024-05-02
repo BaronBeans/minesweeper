@@ -1,21 +1,22 @@
 package game
 
 import (
-	"fmt"
 	"log"
 )
 
 type Board struct {
-	Width  int
-	Height int
-	Cells  [][]Cell
-	Bombs  []Bomb
+	Width     int
+	Height    int
+	Cells     [][]Cell
+	Bombs     []Bomb
+	GameState string
 }
 
 func NewBoard(width, height, bombcount int) Board {
 	board := Board{
-		Width:  width,
-		Height: height,
+		Width:     width,
+		Height:    height,
+		GameState: "playing",
 	}
 	bombs, err := GenerateBombs(width, height, bombcount)
 	if err != nil {
@@ -25,8 +26,6 @@ func NewBoard(width, height, bombcount int) Board {
 	board.Bombs = bombs
 
 	cells := GenerateCells(width, height, board)
-
-	// PrintCells(&cells)
 
 	board.Cells = cells
 
@@ -50,12 +49,12 @@ func (b *Board) HitCell(x, y int) {
 
 	won := b.checkWinState()
 	if won {
-		fmt.Println("Game over you won!!!")
+		b.GameState = "won"
 	}
 
 	lost := b.checkLoseState()
 	if lost {
-		fmt.Println("Game over you lost!!!")
+		b.GameState = "lost"
 	}
 }
 
