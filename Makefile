@@ -1,11 +1,8 @@
-test:
-	@go run ./cmd/test
-
 game: 
 	@go run ./cmd/game
 
 build:
-	@go build -o ./bin/game ./cmd/game
+	@go build -o ./bin/minesweeper ./cmd/minesweeper
 
 install:
-	@go install ./cmd/game
+	@go install ./cmd/minesweeper
