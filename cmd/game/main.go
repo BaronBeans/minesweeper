@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"minesweeper/pkg/game"
 	"os"
-	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -12,12 +11,14 @@ import (
 type model struct {
 	Board       game.Board
 	CurrentCell game.BasicCell
+	GameOver    bool
 }
 
 func initialModel() model {
 	return model{
-		Board:       game.NewBoard(10, 10, 5),
+		Board:       game.NewBoard(50, 20, 100),
 		CurrentCell: game.BasicCell{X: 0, Y: 0},
+		GameOver:    false,
 	}
 }
 
@@ -35,22 +36,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "h":
 			if m.CurrentCell.X > 0 {
 				m.CurrentCell.X--
+				return m, nil
 			}
 		case "j":
-			if m.CurrentCell.Y < len(m.Board.Cells) {
+			if m.CurrentCell.Y < len(m.Board.Cells)-1 {
 				m.CurrentCell.Y++
+				return m, nil
 			}
 		case "k":
 			if m.CurrentCell.Y > 0 {
 				m.CurrentCell.Y--
+				return m, nil
 			}
 		case "l":
-			if m.CurrentCell.X < len(m.Board.Cells[0]) {
+			if m.CurrentCell.X < len(m.Board.Cells[0])-1 {
 				m.CurrentCell.X++
+				return m, nil
 			}
 
 		case " ":
-			m.Board.Cells[m.CurrentCell.Y][m.CurrentCell.X].Visible = true
+			m.Board.HitCell(m.CurrentCell.X, m.CurrentCell.Y)
 		}
 	}
 
@@ -58,6 +63,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.GameOver {
+		s := "Game over, won!!!"
+		return s
+	}
+
 	s := "minesweeper\n"
 
 	for r, row := range m.Board.Cells {
@@ -66,8 +76,10 @@ func (m model) View() string {
 				s += "_"
 			} else if col.Visible == false {
 				s += "*"
+			} else if col.Value == -1 {
+				s += "!"
 			} else {
-				s += string(m.Board.Cells[r][c].Value)
+				s += fmt.Sprintf("%d", m.Board.Cells[r][c].Value)
 			}
 		}
 		s += "\n"
